@@ -13,4 +13,5 @@
     <TextArea fx:id="textOutput" editable="false" layoutX="14.0" layoutY="214.0" prefHeight="172.0" prefWidth="272.0" promptText="Тут будет результат" />
     <Button fx:id="startButton" layoutX="314.0" layoutY="214.0" mnemonicParsing="false" prefHeight="172.0" prefWidth="272.0" text="Начать" />
    <TextField fx:id="keyInput" layoutX="314.0" layoutY="100.0" prefHeight="25.0" prefWidth="272.0" promptText="Введите ключ" text="5" />
+   <TextArea fx:id="errorOutput" editable="false" layoutX="314.0" layoutY="139.0" prefHeight="61.0" prefWidth="272.0" />
 </AnchorPane>

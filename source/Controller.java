@@ -5,7 +5,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import java.util.Arrays;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Controller {
     public TextArea textInput;
@@ -14,9 +15,10 @@ public class Controller {
     public ChoiceBox<String> algorithmSelect;
     public Button startButton;
     public TextField keyInput;
+    public TextArea errorOutput;
 
     private ObservableList<String> actionItems = FXCollections.observableArrayList("Зашифровать", "Расшивровать");
-    private ObservableList<String> algorithmItems = FXCollections.observableArrayList("Скитала");
+    private ObservableList<String> algorithmItems = FXCollections.observableArrayList("Скитала", "Вертикальная перестановка");
 
     public void initialize() {
         // Setup Action ChoiceBox
@@ -34,11 +36,58 @@ public class Controller {
     private void onStartButtonClicked() {
         if (actionSelect.getSelectionModel().getSelectedIndex() == 0) {
             if (algorithmSelect.getSelectionModel().getSelectedIndex() == 0) encodeUsingScytale();
+            else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) encodeUsingVerticalReplacement();
         } else {
             if (algorithmSelect.getSelectionModel().getSelectedIndex() == 0) decodeUsingScytale();
+            else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) decodeUsingVertivalReplacement();
         }
     }
 
+    private void encodeUsingVerticalReplacement() {
+        // Init integer array
+        List<Integer> integerKeyArray = new ArrayList<>();
+
+        // Setup double dimensional array
+        List<List<Character>> characterColsDoubleDimensionalArray = new ArrayList<>();
+
+        // Setup single dimensional array
+        List<Character> characterRowsSingleDimensionalArray = new ArrayList<>();
+
+        // Reformat key input to string array
+        String[] reformatedStringArray = keyInput.getText().replaceAll("\\s", "").split(",");
+
+        // Reformat string array to integer array
+        for (String stringInteger : reformatedStringArray) integerKeyArray.add(Integer.parseInt(stringInteger));
+
+        // Setup the key length
+        Integer keyLength = integerKeyArray.size();
+
+        // Check for input text and key length
+        if (keyLength > textInput.getText().length()) errorOutput.setText("Ключ не может быть длиннее текста.");
+        // Format decoded double dimensional array
+        else {
+            Integer counter = 0;
+            // Format single & double dimensional arrays
+            for (int i = 0; i < textInput.getLength(); i++) {
+                characterRowsSingleDimensionalArray.add(textInput.getText().charAt(i));
+                if (counter == keyLength - 1) {
+                    characterColsDoubleDimensionalArray.add(new ArrayList<>(characterRowsSingleDimensionalArray));
+                    characterRowsSingleDimensionalArray.clear();
+                    counter = 0;
+                } else counter++;
+            }
+        }
+        // Encode and format encoded output
+        StringBuilder encodedString = new StringBuilder();
+
+        for (int cols = 0; cols < characterColsDoubleDimensionalArray.size(); cols++) {
+            // TODO
+        }
+    }
+
+    private void decodeUsingVertivalReplacement() {
+
+    }
     private void encodeUsingScytale() {
         // Calculate num of rows for char array
         double calculatedRows = Math.ceil((double) textInput.getText().length() / Integer.parseInt(keyInput.getText()));
