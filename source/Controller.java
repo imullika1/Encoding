@@ -4,9 +4,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Controller {
     public TextArea textInput;
@@ -39,10 +38,11 @@ public class Controller {
             else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) encodeUsingVerticalReplacement();
         } else {
             if (algorithmSelect.getSelectionModel().getSelectedIndex() == 0) decodeUsingScytale();
-            else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) decodeUsingVertivalReplacement();
+            else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) decodeUsingVerticalReplacement();
         }
     }
 
+    // Vertical Encoding & Decoding
     private void encodeUsingVerticalReplacement() {
         // Init integer array
         List<Integer> integerKeyArray = new ArrayList<>();
@@ -71,29 +71,29 @@ public class Controller {
             for (int i = 0; i < textInput.getLength(); i++) {
                 characterRowsSingleDimensionalArray.add(textInput.getText().charAt(i));
                 if (counter == keyLength - 1) {
-                    characterColsDoubleDimensionalArray.add(new ArrayList<Character>(characterRowsSingleDimensionalArray));
+                    characterColsDoubleDimensionalArray.add(new ArrayList<>(characterRowsSingleDimensionalArray));
                     characterRowsSingleDimensionalArray.clear();
                     counter = 0;
                 } else counter++;
             }
         }
 
+        // Init key counter
+        int counter = 1;
         // Encode and format encoded output
         StringBuilder encodedString = new StringBuilder();
         for (int index = 0; index < keyLength; index++) {
             for (List list : characterColsDoubleDimensionalArray) {
-                encodedString.append(list.get(index));
-                // TODO replace characters in 2d array eq to integerKeyArray
+                encodedString.append(list.get(integerKeyArray.indexOf(counter)));
             }
+            counter++;
         }
-
         // Output encoded string
         textOutput.setText(encodedString.toString());
     }
+    private void decodeUsingVerticalReplacement() { }
 
-    private void decodeUsingVertivalReplacement() {
-
-    }
+    // Scytale Encoding & Decoding
     private void encodeUsingScytale() {
         // Calculate num of rows for char array
         double calculatedRows = Math.ceil((double) textInput.getText().length() / Integer.parseInt(keyInput.getText()));
@@ -121,7 +121,6 @@ public class Controller {
 
         textOutput.setText(encoded.toString());
     }
-
     private void decodeUsingScytale() {
         // Init string to decode
         String encodedString = textInput.getText();
