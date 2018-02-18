@@ -53,12 +53,6 @@ public class Controller {
         // Init integer array
         List<Integer> integerKeyArray = new ArrayList<>();
 
-        // Setup double dimensional array
-        List<List<Character>> characterColsDoubleDimensionalArray = new ArrayList<>();
-
-        // Setup single dimensional array
-        List<Character> characterRowsSingleDimensionalArray = new ArrayList<>();
-
         // Reformat key input to string array
         String[] reformatedStringArray = keyInput.getText().replaceAll("\\s", "").split(",");
 
@@ -72,30 +66,42 @@ public class Controller {
         if (keyLength > textInput.getText().length()) errorOutput.setText("Ключ не может быть длиннее текста.");
         // Format decoded double dimensional array
         else {
+            // Init counter
             Integer counter = 0;
+
+            // Init string builder for format encoded output string
+            StringBuilder encodedString = new StringBuilder();
+
+            // Setup single dimensional array
+            List<Character> colCharacterSingleDimensionalArray = new ArrayList<>();
+
+            // Setup double dimensional array
+            List<List<Character>> rowCharacterDoubleDimensionalArray = new ArrayList<>();
+
             // Format single & double dimensional arrays
             for (int i = 0; i < textInput.getLength(); i++) {
-                characterRowsSingleDimensionalArray.add(textInput.getText().charAt(i));
+                colCharacterSingleDimensionalArray.add(textInput.getText().charAt(i));
                 if (counter == keyLength - 1) {
-                    characterColsDoubleDimensionalArray.add(new ArrayList<>(characterRowsSingleDimensionalArray));
-                    characterRowsSingleDimensionalArray.clear();
+                    rowCharacterDoubleDimensionalArray.add(new ArrayList<>(colCharacterSingleDimensionalArray));
+                    colCharacterSingleDimensionalArray.clear();
                     counter = 0;
                 } else counter++;
             }
-        }
 
-        // Init key counter
-        int counter = 1;
-        // Encode & format encoded output
-        StringBuilder encodedString = new StringBuilder();
-        for (int index = 0; index < keyLength; index++) {
-            for (List list : characterColsDoubleDimensionalArray) {
-                encodedString.append(list.get(integerKeyArray.indexOf(counter)));
+            // Prepare counter for new loop
+            counter = 1;
+
+            // Format encoded string for output
+            for (int index = 0; index < keyLength; index++) {
+                for (List list : rowCharacterDoubleDimensionalArray) {
+                    encodedString.append(list.get(integerKeyArray.indexOf(counter)));
+                }
+                counter++;
             }
-            counter++;
+
+            // Output encoded string
+            textOutput.setText(encodedString.toString());
         }
-        // Output encoded string
-        textOutput.setText(encodedString.toString());
     }
     private void decodeUsingVerticalReplacement() { }
 
@@ -114,18 +120,18 @@ public class Controller {
             StringBuilder encodedString = new StringBuilder();
 
             // Setup single dimensional array of cols
-            List<Character> colCharacterDoubleDimensionalArray = new ArrayList<>();
+            List<Character> colCharacterSingleDimensionalArray = new ArrayList<>();
 
             // Setup double dimensional array of rows
             List<List<Character>> rowCharacterDoubleDimensionalArray = new ArrayList<>();
 
             // Format decoded double dimensional array
             for (int i = 0; i < textInput.getLength(); i++) {
-                colCharacterDoubleDimensionalArray.add(textInput.getText().charAt(i));
+                colCharacterSingleDimensionalArray.add(textInput.getText().charAt(i));
                 if (!counter.equals(key)) counter++;
                 else {
-                    rowCharacterDoubleDimensionalArray.add(new ArrayList<>(colCharacterDoubleDimensionalArray));
-                    colCharacterDoubleDimensionalArray.clear();
+                    rowCharacterDoubleDimensionalArray.add(new ArrayList<>(colCharacterSingleDimensionalArray));
+                    colCharacterSingleDimensionalArray.clear();
                     counter = 1;
                 }
             }
