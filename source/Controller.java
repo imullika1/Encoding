@@ -8,17 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Controller {
-    public TextArea textInput;
-    public TextArea textOutput;
-    public ChoiceBox<String> actionSelect;
-    public ChoiceBox<String> algorithmSelect;
     public Button startButton;
     public TextField keyInput;
+    public TextArea textInput;
+    public TextArea textOutput;
     public TextArea errorOutput;
+    public ChoiceBox<String> actionSelect;
+    public ChoiceBox<String> algorithmSelect;
 
+    // Setup choice boxes
     private ObservableList<String> actionItems = FXCollections.observableArrayList("Зашифровать", "Расшивровать");
     private ObservableList<String> algorithmItems = FXCollections.observableArrayList("Скитала", "Вертикальная перестановка");
 
+    // Setup on startup
     public void initialize() {
         // Setup Action ChoiceBox
         actionSelect.setItems(actionItems);
@@ -32,11 +34,15 @@ public class Controller {
         startButton.setOnMouseClicked(event -> onStartButtonClicked());
     }
 
+    // Start button click event
     private void onStartButtonClicked() {
+        // Check what type of action chosen: encoding/decoding
         if (actionSelect.getSelectionModel().getSelectedIndex() == 0) {
+            // If encoding - check the method of encoding
             if (algorithmSelect.getSelectionModel().getSelectedIndex() == 0) encodeUsingScytale();
             else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) encodeUsingVerticalReplacement();
         } else {
+            // If decoding - check the method of decoding
             if (algorithmSelect.getSelectionModel().getSelectedIndex() == 0) decodeUsingScytale();
             else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) decodeUsingVerticalReplacement();
         }
@@ -80,7 +86,7 @@ public class Controller {
 
         // Init key counter
         int counter = 1;
-        // Encode and format encoded output
+        // Encode & format encoded output
         StringBuilder encodedString = new StringBuilder();
         for (int index = 0; index < keyLength; index++) {
             for (List list : characterColsDoubleDimensionalArray) {
@@ -95,68 +101,46 @@ public class Controller {
 
     // Scytale Encoding & Decoding
     private void encodeUsingScytale() {
-        // Calculate num of rows for char array
-        double calculatedRows = Math.ceil((double) textInput.getText().length() / Integer.parseInt(keyInput.getText()));
-        // Init double char array
-        char decodedArray[][] = new char[(int) calculatedRows][Integer.parseInt(keyInput.getText())];
-        // Counters for loop
-        int col = 0;
-        int row = 0;
-        // Make char array
-        for (int i = 0; i < textInput.getText().length(); i++) {
-            decodedArray[row][col] = textInput.getText().charAt(i);
-            if (col == Integer.parseInt(keyInput.getText()) - 1) {
-                col = 0;
-                row++;
-            }
-            else col++;
-        }
-        // Encode Build output string
-        StringBuilder encoded = new StringBuilder();
-        for (int cols = 0; cols < decodedArray[0].length; cols++) {
-            for (char[] DecodedArray : decodedArray) {
-                encoded.append(DecodedArray[cols]);
-            }
-        }
+        // Setup key
+        Integer key = Integer.parseInt(keyInput.getText());
 
-        textOutput.setText(encoded.toString());
-    }
-    private void decodeUsingScytale() {
-        // Init string to decode
-        String encodedString = textInput.getText();
-        // Init string builder for format new sting
-        StringBuilder decodedStringBuilder = new StringBuilder();
-        // Calculate num of rows for char array
-        double calculatedRows = Math.ceil((double) textInput.getText().length() / Integer.parseInt(keyInput.getText()));
-        // Init double char array
-        char decodedArray[][] = new char[(int) calculatedRows][Integer.parseInt(keyInput.getText())];
-        // Counters for loop
-        int col = 0;
-        int row = 0;
-        // Decode loop
-        for (int times = 0; times < Integer.parseInt(keyInput.getText()); times++) {
-            col = 0;
-            row = 0;
-            for (int i = 0; i < encodedString.length(); i++) {
-                decodedArray[row][col] = encodedString.charAt(i);
-                if (col == Integer.parseInt(keyInput.getText()) - 1) {
-                    col = 0;
-                    row++;
-                }
-                else col++;
-            }
+        // Check key & input string length
+        if (textInput.getLength() < key) errorOutput.setText("Ключ не может быть длинее текста");
+        else {
+            // Init counter
+            Integer counter = 1;
 
-            for (int cols = 0; cols < decodedArray[0].length; cols++) {
-                for (char[] DecodedArray : decodedArray) {
-                    decodedStringBuilder.append(DecodedArray[cols]);
+            // Init string builder for format encoded output string
+            StringBuilder encodedString = new StringBuilder();
+
+            // Setup single dimensional array of cols
+            List<Character> colCharacterDoubleDimensionalArray = new ArrayList<>();
+
+            // Setup double dimensional array of rows
+            List<List<Character>> rowCharacterDoubleDimensionalArray = new ArrayList<>();
+
+            // Format decoded double dimensional array
+            for (int i = 0; i < textInput.getLength(); i++) {
+                colCharacterDoubleDimensionalArray.add(textInput.getText().charAt(i));
+                if (!counter.equals(key)) counter++;
+                else {
+                    rowCharacterDoubleDimensionalArray.add(new ArrayList<>(colCharacterDoubleDimensionalArray));
+                    colCharacterDoubleDimensionalArray.clear();
+                    counter = 1;
                 }
             }
 
-            encodedString = decodedStringBuilder.toString();
-            decodedStringBuilder = new StringBuilder();
-            System.out.println(encodedString);
+            // Format encoded string for output
+            for (int i = 0; i < rowCharacterDoubleDimensionalArray.get(0).size(); i++) {
+                for (List row: rowCharacterDoubleDimensionalArray) {
+                    encodedString.append(row.get(i));
+                }
+            }
+
+            // Output encoded string
+            textOutput.setText(encodedString.toString());
         }
 
-        textOutput.setText(encodedString);
     }
+    private void decodeUsingScytale() { }
 }
