@@ -15,10 +15,11 @@ public class Controller {
     public TextArea errorOutput;
     public ChoiceBox<String> actionSelect;
     public ChoiceBox<String> algorithmSelect;
+    public TextField keyInput2;
 
     // Setup choice boxes
     private ObservableList<String> actionItems = FXCollections.observableArrayList("Зашифровать", "Расшивровать");
-    private ObservableList<String> algorithmItems = FXCollections.observableArrayList("Скитала", "Вертикальная перестановка");
+    private ObservableList<String> algorithmItems = FXCollections.observableArrayList("Скитала", "Вертикальная перестановка", "Двойная перестановка");
 
     // Setup on startup
     public void initialize() {
@@ -41,12 +42,97 @@ public class Controller {
             // If encoding - check the method of encoding
             if (algorithmSelect.getSelectionModel().getSelectedIndex() == 0) encodeUsingScytale();
             else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) encodeUsingVerticalReplacement();
+            else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 2) encodeUsingDoubleReplacement();
         } else {
             // If decoding - check the method of decoding
             if (algorithmSelect.getSelectionModel().getSelectedIndex() == 0) decodeUsingScytale();
             else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 1) decodeUsingVerticalReplacement();
+            else if (algorithmSelect.getSelectionModel().getSelectedIndex() == 2) decodeUsingDoubleReplacement();
         }
     }
+
+    // Double Encoding & Decoding
+    private void encodeUsingDoubleReplacement () {
+
+        // Init horizontal key array
+        List<Integer> horizontalKeyArray = new ArrayList<>();
+        // Init vertical key array
+        List<Integer> verticalKeyArray = new ArrayList<>();
+
+        // Reformat horizontal key input to string array
+        String[] horizontalKeyStringArray = keyInput.getText().replaceAll("\\s", "").split(",");
+        // Reformat vertical key input to string array
+        String[] verticalKeyStringArray = keyInput2.getText().replaceAll("\\s", "").split(",");
+
+        // Filling up horizontalKeyArray
+        for (String horizontalStringyInteger: horizontalKeyStringArray) horizontalKeyArray.add(Integer.parseInt(horizontalStringyInteger));
+        // Filling up verticalKeyArray
+        for (String verticalStringyInteger: verticalKeyStringArray) verticalKeyArray.add(Integer.parseInt(verticalStringyInteger));
+
+        // Setup horizontal key length
+        Integer horizontalKeyLength = horizontalKeyArray.size();
+        // Setup vertical key length
+        Integer verticalKeyLength = verticalKeyArray.size();
+
+        // Compare for input text and key length
+        if (horizontalKeyLength > textInput.getLength()) errorOutput.setText("Ключ не может быть длиннее текста.");
+        // Setup decoded double dimensional array
+        else {
+            // Init counter
+            Integer counter = 0;
+
+            // Init string builder for format encoded output string
+            StringBuilder encodedString = new StringBuilder();
+
+            // Init single dimensional array
+            List<Character> colCharacterSingleDimensionalArray = new ArrayList<>();
+
+            // Init double dimensional array
+            List<List<Character>> rowCharacterDoubleDimensionalArray = new ArrayList<>();
+
+            // Format single & double dimensional arrays
+            for (int i = 0; i < textInput.getLength(); i++) {
+                colCharacterSingleDimensionalArray.add(textInput.getText().charAt(i));
+                if (counter != horizontalKeyLength - 1) counter++;
+                else {
+                    rowCharacterDoubleDimensionalArray.add(new ArrayList<>(colCharacterSingleDimensionalArray));
+                    colCharacterSingleDimensionalArray.clear();
+                    counter = 0;
+                }
+            }
+            // Prepare counter for vertical encoding
+            counter = 1;
+
+            // Init vertical encoded single dimensional array
+            List<Object> colVerticalEncodedSingleDimensionalArray = new ArrayList<>();
+            // Init vertical encoded double dimensional array
+            List<List<Object>> rowVerticalEncodedDoubleDimensionalArray = new ArrayList<>();
+
+            // Format vertical encoding
+            for (int i = 0; i < horizontalKeyLength; i++) {
+                for (List list: rowCharacterDoubleDimensionalArray) {
+                    colVerticalEncodedSingleDimensionalArray.add(list.get(horizontalKeyArray.indexOf(counter)));
+                }
+                rowVerticalEncodedDoubleDimensionalArray.add(new ArrayList<>(colVerticalEncodedSingleDimensionalArray));
+                colVerticalEncodedSingleDimensionalArray.clear();
+                counter++;
+            }
+
+            // Prepare counter for horizontal encoding
+            counter = 1;
+
+            // Format horizontal encoding
+            for (int i = 0; i < verticalKeyLength; i++) {
+                for (List list: rowVerticalEncodedDoubleDimensionalArray) {
+                    encodedString.append(list.get(verticalKeyArray.indexOf(counter)));
+                }
+                counter++;
+            }
+
+            textOutput.setText(encodedString.toString());
+        }
+    }
+    private void decodeUsingDoubleReplacement () { }
 
     // Vertical Encoding & Decoding
     private void encodeUsingVerticalReplacement() {

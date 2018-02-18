@@ -1,6 +1,8 @@
 # Folders
 .idea
 build
+META-INF
+
 # Compiled class file
 *.class
 
@@ -14,7 +16,6 @@ build
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
