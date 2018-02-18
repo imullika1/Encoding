@@ -71,18 +71,24 @@ public class Controller {
             for (int i = 0; i < textInput.getLength(); i++) {
                 characterRowsSingleDimensionalArray.add(textInput.getText().charAt(i));
                 if (counter == keyLength - 1) {
-                    characterColsDoubleDimensionalArray.add(new ArrayList<>(characterRowsSingleDimensionalArray));
+                    characterColsDoubleDimensionalArray.add(new ArrayList<Character>(characterRowsSingleDimensionalArray));
                     characterRowsSingleDimensionalArray.clear();
                     counter = 0;
                 } else counter++;
             }
         }
+
         // Encode and format encoded output
         StringBuilder encodedString = new StringBuilder();
-
-        for (int cols = 0; cols < characterColsDoubleDimensionalArray.size(); cols++) {
-            // TODO
+        for (int index = 0; index < keyLength; index++) {
+            for (List list : characterColsDoubleDimensionalArray) {
+                encodedString.append(list.get(index));
+                // TODO replace characters in 2d array eq to integerKeyArray
+            }
         }
+
+        // Output encoded string
+        textOutput.setText(encodedString.toString());
     }
 
     private void decodeUsingVertivalReplacement() {
