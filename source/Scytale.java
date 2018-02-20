@@ -40,7 +40,8 @@ class Scytale {
         String[] secondArrayOfStrings = input.split("(?<=\\G.{" + rows.size() + "})");
         for (int i = 0; i < secondArrayOfStrings[0].length(); i++) {
             for (String string: secondArrayOfStrings) {
-                output.append(string.charAt(i));
+                try { output.append(string.charAt(i)); }
+                catch (StringIndexOutOfBoundsException ignored) { }
             }
         }
         return  String.valueOf(output.toString().replace("*", ""));
