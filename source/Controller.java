@@ -19,23 +19,21 @@ public class Controller {
     public void initialize() {
 
         // Setup Action ChoiceBox
-        action.setItems(FXCollections.observableArrayList(
-                "Зашифровать", "Расшивровать"
-        ));
+        action.setItems(FXCollections.observableArrayList("Зашифровать", "Расшивровать"));
         action.getSelectionModel().select(0);
 
         // Setup Algorithm ChoiceBox
         algorithm.setItems(FXCollections.observableArrayList(
-                "Скитала", "Вертикальная перестановка", "Двойная перестановка"
+                "Скитала", "Шифровальные таблицы", "Двойная перестановка"
         ));
         algorithm.getSelectionModel().select(0);
 
         // Input text length counter
         input
                 .textProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    counter.setText("Количество символов: " + input.getLength());
-                });
+                .addListener(
+                        (observable, oldValue, newValue) -> counter.setText("Количество символов: " + input.getLength())
+                );
 
         // Algorithm select event
         algorithm
@@ -44,6 +42,7 @@ public class Controller {
                 .addListener((observable, oldValue, newValue) -> {
                     if (newValue.equals(2)) key_2.setVisible(true);
                     else key_2.setVisible(false);
+                    key_1.setText("");
                 });
 
         // Input key rules
@@ -71,9 +70,19 @@ public class Controller {
                 if (!newValue.chars().allMatch(element -> newValue.matches("^[0-9]+$"))) {
                     key_1.setText(oldValue);
                     error.setText(
-                        "Для метода шифрования скитала" +
-                        "требуется указать ключ одним" +
+                        "Для метода шифрования скитала " +
+                        "требуется указать ключ одним " +
                         "десятичным числом без пробелов и символов."
+                    );
+                } else key_1.setText(newValue);
+            } else if (algorithm == 1) {
+                if (!newValue.chars().allMatch(element -> newValue.matches("^[a-zA-Z]+|[а-яА-Я]+$"))) {
+                    key_1.setText(oldValue);
+                    error.setText(
+                        "Для метода шифрования шифровальных таблиц " +
+                        "требуется указать ключ, состоящий " +
+                        "из слова или набора символов из одного афавита " +
+                        ", без знаков, цифр и пробелов."
                     );
                 } else key_1.setText(newValue);
             }
@@ -90,12 +99,20 @@ public class Controller {
         if (input.length() != 0) {
             if (algorithm == 0) {
                 if (Integer.parseInt(key_1) != 0 && Integer.parseInt(key_1) != 1)
-                    if (input.length() > Integer.parseInt(key_1) && input.length() != Integer.parseInt(key_1)) {
+                    if (input.length() > Integer.parseInt(key_1)) {
                         Scytale scytale = new Scytale(input, Integer.parseInt(key_1));
                         if (action == 0) output.setText(scytale.encode());
                         else output.setText(scytale.decode());
                     } else error.setText("Использование длины ключа больше или равной длине текста бесполезно.");
                 else error.setText("Ключ не должен быть равен 0 или 1.");
+            } else if (algorithm == 1) {
+                if (key_1.length() != 0 && key_1.length() != 1) {
+                    if (input.length() > key_1.length()) {
+                        VerticalReplacement vertical = new VerticalReplacement(input, key_1);
+                        if (action == 0) output.setText(vertical.encode());
+                        else output.setText(vertical.decode());
+                    } else error.setText("Использование длины ключа больше или равной длине текста бесполезно");
+                } else error.setText("Ключ должен состоять как минимум из 2 символов.");
             }
         } else error.setText("Введите текст для шифровки/расшифровки");
     }
@@ -180,61 +197,6 @@ public class Controller {
             counter++;
         }
 
-        output.setText(encodedString.toString());
-    }
-
-    // Vertical Encoding & Decoding
-    private void encodeUsingVerticalReplacement() {
-        // Init integer array
-        List<Integer> integerKeyArray = new ArrayList<>();
-
-        // Reformat key input to string array
-        String[] reformatedStringArray = key_1.getText().replaceAll("\\s", "").split(",");
-
-        // Reformat string array to integer array
-        for (String stringInteger : reformatedStringArray) integerKeyArray.add(Integer.parseInt(stringInteger));
-
-        // Setup the key length
-        Integer keyLength = integerKeyArray.size();
-
-        // Check for input text and key length
-
-        // Format decoded double dimensional array
-
-        // Init counter
-        Integer counter = 0;
-
-        // Init string builder for format encoded output string
-        StringBuilder encodedString = new StringBuilder();
-
-        // Setup single dimensional array
-        List<Character> colCharacterSingleDimensionalArray = new ArrayList<>();
-
-        // Setup double dimensional array
-        List<List<Character>> rowCharacterDoubleDimensionalArray = new ArrayList<>();
-
-        // Format single & double dimensional arrays
-        for (int i = 0; i < input.getLength(); i++) {
-            colCharacterSingleDimensionalArray.add(input.getText().charAt(i));
-            if (counter == keyLength - 1) {
-                rowCharacterDoubleDimensionalArray.add(new ArrayList<>(colCharacterSingleDimensionalArray));
-                colCharacterSingleDimensionalArray.clear();
-                counter = 0;
-            } else counter++;
-        }
-
-        // Prepare counter for new loop
-        counter = 1;
-
-        // Format encoded string for output
-        for (int index = 0; index < keyLength; index++) {
-            for (List list : rowCharacterDoubleDimensionalArray) {
-                encodedString.append(list.get(integerKeyArray.indexOf(counter)));
-            }
-            counter++;
-        }
-
-        // Output encoded string
         output.setText(encodedString.toString());
     }
 }
