@@ -1,3 +1,5 @@
+package Methods;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +14,7 @@ public class VerticalReplacement {
     private List<List<Character>> rows = new ArrayList<>();
 
     // Constructor
-    VerticalReplacement (String input, String key) {
+    public VerticalReplacement (String input, String key) {
         this.key = key;
         this.input = input;
         init();
@@ -35,7 +37,7 @@ public class VerticalReplacement {
         }
     }
 
-    String encode () {
+    public String encode () {
         for (int i = 0; i < rows.get(0).size(); i++) {
             for (List row: rows) {
                 try { output.append(row.get(unsortedKey.indexOf(sortedKey.get(i)))); }
@@ -45,7 +47,7 @@ public class VerticalReplacement {
         return  String.valueOf(output);
     }
 
-    String decode () {
+    public String decode () {
         List<Character> charCols = new ArrayList<>();
         List<List<Character>> charRows = new ArrayList<>();
 

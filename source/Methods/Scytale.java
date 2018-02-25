@@ -1,7 +1,9 @@
+package Methods;
+
 import java.util.ArrayList;
 import java.util.List;
 
-class Scytale {
+public class Scytale {
     // Variables
     private Integer key;
     private String input;
@@ -9,7 +11,7 @@ class Scytale {
     private List<List<Character>> rows = new ArrayList<>();
 
     // Constructor
-    Scytale(String input, Integer key) {
+    public Scytale(String input, Integer key) {
         this.key = key;
         this.input = input;
         this.init();
@@ -25,7 +27,7 @@ class Scytale {
     }
 
     // Encoding
-    String encode () {
+    public String encode () {
         for (int i = 0; i < rows.get(0).size(); i++) {
             for (List row: rows) {
                 try { output.append(row.get(i)); }
@@ -36,7 +38,7 @@ class Scytale {
     }
 
     // Decoding
-    String decode () {
+    public String decode () {
         String[] secondArrayOfStrings = input.split("(?<=\\G.{" + rows.size() + "})");
         for (int i = 0; i < secondArrayOfStrings[0].length(); i++) {
             for (String string: secondArrayOfStrings) {
