@@ -34,7 +34,7 @@ public class Controller {
         // Setup Algorithm ChoiceBox
         algorithm.setItems(FXCollections.observableArrayList(
             "Скитала",
-            "Шифровальные таблицы",
+            "Шифрующие таблицы",
             "Двойная перестановка"
         ));
         algorithm.getSelectionModel().select(0);
@@ -102,7 +102,7 @@ public class Controller {
                 } else key_1.setText(newValue);
             else if (algorithm == 1)
                 // Vertical Replacement key
-                if (!VerticalRules.checkKey(newValue)) {
+                if (!VerticalRules.checkKey(newValue, oldValue)) {
                     key_1.setText(oldValue);
                     error.setText(
                         "Для метода шифрования шифровальных таблиц " +

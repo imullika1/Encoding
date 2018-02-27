@@ -1,65 +1,76 @@
 package Methods;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DoubleReplacement {
-    private int[] key_1;
-    private int[] key_1Sorted;
-    private int[] key_2;
-    private int[] key_2Sorted;
+    private List<Integer> key_1 = new ArrayList<>();
+    private List<Integer> key_1Sorted = new ArrayList<>();
+    private List<Integer> key_2 = new ArrayList<>();
+    private List<Integer> key_2Sorted = new ArrayList<>();
     private String input;
     private List<Character> cols;
-    private List<Character> colsNew;
+    private List<Object> colsNew;
     private List<List<Character>> rows = new ArrayList<>();
     private List<List<Character>> rowsNew = new ArrayList<>();
-    private StringBuilder output;
+    private StringBuilder output = new StringBuilder();
 
     public DoubleReplacement (String input, String key_1, String key_2) {
         this.input = input;
 
-        this.key_1 = new int[key_1.length()];
-        this.key_2 = new int[key_2.length()];
-
         String[] stringifyKey_1 = key_1.split("");
         String[] stringifyKey_2 = key_2.split("");
 
-        for (int i = 0; i < stringifyKey_1.length; i++)
-            this.key_1[i] = Integer.parseInt(stringifyKey_1[i]);
+        for (String aStringifyKey_1 : stringifyKey_1)
+            this.key_1.add(Integer.parseInt(aStringifyKey_1));
 
-        for (int i = 0; i < stringifyKey_2.length; i++)
-            this.key_2[i] = Integer.parseInt(stringifyKey_2[i]);
-    }
+        for (String aStringifyKey_2 : stringifyKey_2)
+            this.key_2.add(Integer.parseInt(aStringifyKey_2));
 
-    public String encode () {
-        for (String substring: input.split("(?<=\\G.{" + key_1.length + "})")) {
+        for (String substring: input.split("(?<=\\G.{" + this.key_1.size() + "})")) {
             cols = new ArrayList<>();
 
-            for (int i = 0; i < substring.length(); i++)
-                cols.add(substring.charAt(i));
+            for (int i = 0; i < this.key_1.size(); i++)
+                try { cols.add(substring.charAt(i)); }
+                catch (StringIndexOutOfBoundsException ignored) { cols.add('*'); }
 
             rows.add(new ArrayList<>(cols));
         }
 
-        key_1Sorted = new int[key_1.length];
-        key_2Sorted = new int[key_2.length];
+        key_1Sorted.addAll(this.key_1);
+        key_2Sorted.addAll(this.key_2);
 
-        System.arraycopy(key_1, 0, key_1Sorted, 0, key_1.length);
-        System.arraycopy(key_2, 0, key_2Sorted, 0, key_2.length);
+        Collections.sort(key_1Sorted);
+        Collections.sort(key_2Sorted);
+    }
 
-        Arrays.sort(key_1Sorted);
-        Arrays.sort(key_2Sorted);
+    public String encode () {
 
         for (int i = 0; i < rows.size(); i++)
-//            rowsNew.add(new ArrayList<>(rows.get()));
-//TODO
-        System.out.println(rowsNew);
+            rowsNew.add(rows.get(key_2.indexOf(key_2Sorted.get(i))));
 
-        return "";
+        rows.clear();
+
+        for (int i = 0; i < rowsNew.get(0).size(); i++) {
+            colsNew = new ArrayList<>();
+
+            for (List row : rowsNew)
+                colsNew.add(row.get(i));
+
+            rows.add(new ArrayList(colsNew));
+        }
+
+        for (List row : rows)
+            for (Object character : row)
+                output.append((Object) character);
+
+        return String.valueOf(output);
     }
 
     public String decode () {
+
+
 
         return "";
     }
